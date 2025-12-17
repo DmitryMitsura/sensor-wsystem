@@ -1,0 +1,54 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+  warehouse-service:
+    build:
+      context: .
+      dockerfile: warehouse-service/Dockerfile
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      WAREHOUSE_ID: wh-1
+      UDP_TEMPERATURE_PORT: 3344
+      UDP_HUMIDITY_PORT: 3355
+      KAFKA_TOPIC_SENSOR_DATA: sensor-data
+    ports:
+      - "8081:8081"
+      - "3344:3344/udp"
+      - "3355:3355/udp"
+
+  central-service:
+    build:
+      context: .
+      dockerfile: central-service/Dockerfile
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC_SENSOR_DATA: sensor-data
+      THRESHOLD_TEMPERATURE: 35
+      THRESHOLD_HUMIDITY: 50
+      KAFKA_CONSUMER_GROUP: central-monitoring
+    ports:
+      - "8082:8082"

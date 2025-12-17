@@ -1,0 +1,24 @@
+
+
+# Ignore build outputs and IDE files
+*.class
+*.jar
+*.war
+*.iml
+*.iws
+*.ipr
+.idea/
+.vscode/
+.gradle/
+build/
+**/build/target/
+out/
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Ignore OS and editor system files
+.DS_Store
+*.swp

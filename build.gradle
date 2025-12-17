@@ -1,0 +1,35 @@
+plugins {
+    id 'org.springframework.boot' version '3.2.12' apply false
+    id 'io.spring.dependency-management' version '1.1.6' apply false
+}
+
+group = 'com.sensordata'
+version = '1.0.0'
+
+ext {
+    javaVersion = 21
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(javaVersion)
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+    }
+}

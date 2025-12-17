@@ -1,0 +1,4 @@
+rootProject.name = 'sensor-system'
+
+include 'warehouse-service'
+include 'central-service'
