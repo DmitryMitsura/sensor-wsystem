@@ -12,6 +12,7 @@ import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+// Listens for incoming UDP packets and forwards raw messages for processing
 @Slf4j
 public class SensorDataUdpListener {
 

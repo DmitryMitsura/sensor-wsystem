@@ -3,6 +3,7 @@ package com.sensordata.central.processing;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+// Logs alarm events when sensor values exceed configured thresholds
 @Slf4j
 @Component
 public class AlarmLogger {

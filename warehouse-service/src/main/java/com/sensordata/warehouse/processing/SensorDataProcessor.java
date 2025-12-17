@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+// Processes raw sensor messages: parses and publishes domain events
+// Invalid messages are logged and dropped
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -17,7 +19,6 @@ public class SensorDataProcessor {
 
     private final WarehouseProperties warehouseProperties;
     private final SensorDataParser sensorDataParser;
-    private final SensorDataValidator sensorDataValidator;
     private final SensorDataPublisher sensorDataPublisher;
 
     public void process(SensorType sensorType, String rawMessage) {
@@ -28,11 +29,6 @@ public class SensorDataProcessor {
         }
 
         var parsed = parsedOpt.get();
-        if (!sensorDataValidator.isValid(parsed)) {
-            log.warn("Invalid sensor data dropped: type={}, sensorId='{}', value={}, raw='{}'",
-                    sensorType, parsed.sensorId(), parsed.value(), rawMessage);
-            return;
-        }
 
         var event = SensorDataEvent.builder()
                 .warehouseId(warehouseProperties.id())

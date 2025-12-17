@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+// Checks sensor values against configured thresholds which are defined per sensor type
 @Component
 @RequiredArgsConstructor
 public class ThresholdChecker {

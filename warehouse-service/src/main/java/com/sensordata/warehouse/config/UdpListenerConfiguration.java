@@ -11,11 +11,11 @@ public class UdpListenerConfiguration {
 
     @Bean
     public SensorDataUdpListener temperatureUdpListener(UdpProperties udpProperties, SensorDataProcessor sensorDataProcessor) {
-        return new SensorDataUdpListener(udpProperties.temperature().port(), SensorType.TEMPERATURE, sensorDataProcessor);
+        return new SensorDataUdpListener(udpProperties.temperaturePort(), SensorType.TEMPERATURE, sensorDataProcessor);
     }
 
     @Bean
     public SensorDataUdpListener humidityUdpListener(UdpProperties udpProperties, SensorDataProcessor sensorDataProcessor) {
-        return new SensorDataUdpListener(udpProperties.humidity().port(), SensorType.HUMIDITY, sensorDataProcessor);
+        return new SensorDataUdpListener(udpProperties.humidityPort(), SensorType.HUMIDITY, sensorDataProcessor);
     }
 }
