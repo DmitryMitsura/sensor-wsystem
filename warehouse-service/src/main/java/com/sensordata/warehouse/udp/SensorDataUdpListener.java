@@ -3,9 +3,8 @@ package com.sensordata.warehouse.udp;
 import com.sensordata.warehouse.domain.SensorType;
 import com.sensordata.warehouse.processing.SensorDataProcessor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.SmartLifecycle;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -14,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 // Listens for incoming UDP packets and forwards raw messages for processing
 @Slf4j
-public class SensorDataUdpListener {
+public class SensorDataUdpListener implements SmartLifecycle {
 
     private final int port;
     private final SensorType sensorType;
@@ -30,8 +29,9 @@ public class SensorDataUdpListener {
         this.sensorDataProcessor = sensorDataProcessor;
     }
 
-    @PostConstruct
+    @Override
     public void start() {
+        log.error(">>> UDP LISTENER START CALLED <<<");
         if (!running.compareAndSet(false, true)) {
             return;
         }
@@ -44,10 +44,29 @@ public class SensorDataUdpListener {
         }
 
         thread = new Thread(this::listenLoop, "udp-listener-" + sensorType.name().toLowerCase());
-        thread.setDaemon(true);
         thread.start();
 
         log.info("UDP listener started: type={}, port={}", sensorType, port);
+    }
+
+    @Override
+    public void stop() {
+        if (!running.compareAndSet(true, false)) {
+            return;
+        }
+        if (socket != null) {
+            socket.close();
+        }
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running.get();
+    }
+
+    @Override
+    public boolean isAutoStartup() {
+        return true;
     }
 
     private void listenLoop() {
@@ -58,37 +77,23 @@ public class SensorDataUdpListener {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
 
-                String message = new String(packet.getData(), packet.getOffset(), packet.getLength(), StandardCharsets.UTF_8).trim();
-                if (message.isBlank()) {
-                    continue;
-                }
+                String message = new String(
+                        packet.getData(),
+                        packet.getOffset(),
+                        packet.getLength(),
+                        StandardCharsets.UTF_8
+                ).trim();
 
-                sensorDataProcessor.process(sensorType, message);
-            } catch (Exception e) {
-                if (!running.get()) {
-                    break;
+                if (!message.isBlank()) {
+                    sensorDataProcessor.process(sensorType, message);
                 }
-                log.warn("Failed to process UDP message: type={}, port={}", sensorType, port, e);
+            } catch (Exception e) {
+                if (running.get()) {
+                    log.warn("Failed to process UDP message: type={}, port={}", sensorType, port, e);
+                }
             }
         }
 
         log.info("UDP listener stopped: type={}, port={}", sensorType, port);
-    }
-
-    @PreDestroy
-    public void stop() {
-        if (!running.compareAndSet(true, false)) {
-            return;
-        }
-        if (socket != null) {
-            socket.close();
-        }
-        if (thread != null) {
-            try {
-                thread.join(1000);
-            } catch (InterruptedException ignored) {
-                Thread.currentThread().interrupt();
-            }
-        }
     }
 }
