@@ -3,8 +3,10 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.6' apply false
 }
 
-group = 'com.sensordata'
-version = '1.0.0'
+subprojects {
+    group = 'com.sensordata'
+    version = '1.0.0'
+}
 
 ext {
     javaVersion = 21

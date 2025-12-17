@@ -2,8 +2,6 @@ package com.sensordata.warehouse.processing;
 
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 // Parses raw UDP message into structured sensor data
