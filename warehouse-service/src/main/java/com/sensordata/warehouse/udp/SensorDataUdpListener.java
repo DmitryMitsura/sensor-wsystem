@@ -31,7 +31,7 @@ public class SensorDataUdpListener implements SmartLifecycle {
 
     @Override
     public void start() {
-        log.error(">>> UDP LISTENER START CALLED <<<");
+        log.info("UDP LISTENER START CALLED");
         if (!running.compareAndSet(false, true)) {
             return;
         }

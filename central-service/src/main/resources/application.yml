@@ -10,7 +10,8 @@ threshold:
 
 spring:
   kafka:
-    bootstrap-servers: kafka:9092
+#    bootstrap-servers: kafka:9092
+    bootstrap-servers: localhost:9092
     consumer:
       group-id: central-monitoring
       auto-offset-reset: earliest
