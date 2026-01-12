@@ -5,8 +5,8 @@ warehouse:
   id: ${WAREHOUSE_ID:wh-1}
 
 udp:
-  temperature-port: 3344
-  humidity-port: 3355
+  temperature-port: ${UDP_TEMPERATURE_PORT:3344}
+  humidity-port: ${UDP_HUMIDITY_PORT:3355}
 
 sensor-data:
   topic: ${KAFKA_TOPIC_SENSOR_DATA:sensor-data}
