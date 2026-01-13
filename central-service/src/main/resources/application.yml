@@ -5,8 +5,15 @@ sensor-data:
   topic: ${KAFKA_TOPIC_SENSOR_DATA:sensor-data}
 
 threshold:
-  temperature: ${THRESHOLD_TEMPERATURE:35}
-  humidity: ${THRESHOLD_HUMIDITY:50}
+  TEMPERATURE:
+    default: ${THRESHOLD_TEMPERATURE_DEFAULT:30}
+    t1-t10: ${THRESHOLD_TEMPERATURE:35}
+    t11-t20: ${THRESHOLD_TEMPERATURE:40}
+    t21-t40: ${THRESHOLD_TEMPERATURE:45}
+  HUMIDITY:
+    default: ${THRESHOLD_HUMIDITY_DEFAULT:45}
+    t1-t20: ${THRESHOLD_HUMIDITY:50}
+    t21-t80: ${THRESHOLD_HUMIDITY:60}
 
 spring:
   kafka:
