@@ -24,6 +24,9 @@ public class ThresholdChecker {
     @PostConstruct
     private void parseThresholds() {
         Map<SensorType, Map<String, Double>> thresholds = thresholdProperties.thresholds();
+        if (thresholds == null || thresholds.isEmpty()) {
+            throw new IllegalStateException("There are no thresholds properties at all.");
+        }
         for (var typeEntry : thresholds.entrySet()) {
             SensorType sensorType = typeEntry.getKey();
             Map<String, Double> rules = typeEntry.getValue();
@@ -32,6 +35,9 @@ public class ThresholdChecker {
             for (var ruleEntry : rules.entrySet()) {
                 String ruleKey = ruleEntry.getKey();
                 Double threshold = ruleEntry.getValue();
+                if (threshold == null) {
+                    throw new IllegalStateException("There is no correct threshold value for type " + sensorType + " range " + ruleKey);
+                }
                 parseRule(sensorThreshold, ruleKey, threshold);
             }
             sensorThresholds.put(sensorType, sensorThreshold);
